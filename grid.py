@@ -2,6 +2,12 @@ import random
 
 class Grid:
     def __init__(self, size=4):
+        """
+        Initialize the grid for the 2048 game.
+
+        Parameters:
+        size (int): The size of the grid (default is 4).
+        """
         self.size = size
         self.grid = [[0] * size for _ in range(size)]
         self.score = 0
@@ -9,12 +15,14 @@ class Grid:
         self.add_new_tile()
 
     def add_new_tile(self):
+        """Add a new tile (2 or 4) to a random empty cell in the grid."""
         empty_cells = [(i, j) for i in range(self.size) for j in range(self.size) if self.grid[i][j] == 0]
         if empty_cells:
             i, j = random.choice(empty_cells)
-            self.grid[i][j] = 2 if random.random() < 0.9 else 4
+            self.grid[i][j] = random.choice([2, 4])
 
     def can_move(self):
+        """Check if any moves are possible."""
         for i in range(self.size):
             for j in range(self.size):
                 if self.grid[i][j] == 0:
@@ -26,6 +34,7 @@ class Grid:
         return False
 
     def move(self, direction):
+        """Move tiles in the specified direction."""
         def move_row_left(row):
             new_row = [i for i in row if i != 0]
             for i in range(len(new_row) - 1):
@@ -40,25 +49,10 @@ class Grid:
             'left': lambda grid: [move_row_left(row) for row in grid],
             'right': lambda grid: [move_row_left(row[::-1])[::-1] for row in grid],
             'up': lambda grid: list(map(list, zip(*[move_row_left(row) for row in zip(*grid)]))),
-            'down': lambda grid: list(map(list, zip(*[move_row_left(row[::-1])[::-1] for row in zip(*grid)]))),
+            'down': lambda grid: list(map(list, zip(*[move_row_left(row[::-1])[::-1] for row in zip(*grid)])))
         }
 
         if direction in moves:
-            new_grid = moves[direction](self.grid)
-            if new_grid != self.grid:
-                self.grid = new_grid
-                self.add_new_tile()
-            if not self.can_move():
-                print("Game Over! No more moves available!")
-
-    def print_grid(self):
-        for row in self.grid:
-            print('\t'.join(map(str, row)))
-        print()
-
-# Example usage
-if __name__ == "__main__":
-    grid = Grid()
-    grid.print_grid()
-    grid.move('left')
+            self.grid = moves[direction](self.grid)
+            self.add_new_tile()
     grid.print_grid()
