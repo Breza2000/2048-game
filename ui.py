@@ -38,6 +38,10 @@ class GameUI:
         self.create_grid()
         self.create_score_board()
         self.create_menu()
+        
+        # Initialize the grid with two random tiles
+        self.update_grid()
+        
         self.root.bind("<Key>", self.key_handler)
         self.root.mainloop()
 
